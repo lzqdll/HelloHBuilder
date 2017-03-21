@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.js"></script>
+		<script src="jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			#feedback {
+				font-size: 1.4em;
+			}
+			
+			#selectable .ui-selecting {
+				background: #FECA40;
+			}
+			
+			#selectable .ui-selected {
+				background: #F39814;
+				color: white;
+			}
+			
+			#selectable {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				width: 100%;
+			}
+			
+			#selectable li {
+				margin: 3px;
+				padding: 0.4em;
+				/*font-size: 1.4em;*/
+				background-color: silver
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<li hidden="true" id="li_temp">
+			<div class="row">
+
+				<label class="col-xs-6" id="documentName"></label>
+				<label class="col-xs-6" id="reqTime"></label>
+			</div>
+			<div class="row">
+				<label class="col-xs-2"></label>
+				<label class="col-xs-1" id="documentNumber">55</label>
+			</div>
+			<div class="row">
+				<label class="col-xs-2" id="memo"></label>
+				<label class="col-xs-2" id="processStatus"></label>
+				<label class="col-xs-3" id="docType"></label>
+				<div class="col-xs-3"></div>
+			</div>
+			<div class="row hidden" id="auditrow">
+				<label class="col-xs-2" id="id" hidden="true"></label>
+				<button class='btn btn-default col-xs-2 col-xs-offset-1 auditresult' value="APPROVED">YES</button>
+				<button class="btn btn-default col-xs-2 auditresult" value="DECLINED">NO</button>
+				<img src="..." alt="..." class="img-rounded col-xs-2">
+			</div>
+		</li>
+		<div class="container">
+
+			<button>向页面发送 HTTP POST 请求，并获得返回的结果</button>
+			<div class="row row-offcanvas row-offcanvas-right">
+				<div class="col-xs-6 col-sm-9">
+					<ul id="selectable">
+					</ul>
+				</div>
+				<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+					<div class="list-group">
+					<a href="myStampApplication.html" class="list-group-item ">我的申请</a>
+						<a href="myAuditApplication.html" class="list-group-item active">待审批</a>
+						<a href="#" class="list-group-item">新申请</a>
+					</div>
+					<div>
+						<!-- Nav tabs -->
+						<ul class="nav nav-pills nav-stacked" role="tablist">
+							<li role="presentation" class="active">
+								<a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a>
+							</li>
+							<li role="presentation">
+								<a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a>
+							</li>
+							<li role="presentation">
+								<a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a>
+							</li>
+							<li role="presentation">
+								<a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a>
+							</li>
+						</ul>
+						<!-- Tab panes -->
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="home">home...</div>
+							<div role="tabpanel" class="tab-pane" id="profile">profile...</div>
+							<div role="tabpanel" class="tab-pane" id="messages">messages...</div>
+							<div role="tabpanel" class="tab-pane" id="settings">settings...</div>
+						</div>
+					</div>
+				</div>
+				<!--/.sidebar-offcanvas-->
+			</div>
+		</div>
+		<script type="text/javascript ">
+			$(document).ready(function() {
+				$.ajax({
+					url: "http://127.0.0.1:8080/Chop/stampjson/PendingAuditApplications.action",
+					dataType: "jsonp",
+					jsonp: "callback",
+					data: { userid: 48 },
+					success: function(data, status) {
+						$.each(data.chopAuditNodeInstance, function(i, node) {
+							v = node.auditApplicationInstance;
+							var $li = $("#li_temp").clone();
+							$li.prop("hidden", false);
+							$li.find("#id").html(node.id);
+							$li.find("#documentName").html(v.documentName);
+							$li.find("#reqTime").html(v.reqTime);
+							$li.find("#documentNumber").html(v.documentNumber);
+							$li.find("#memo").html(v.memo);
+							$li.find("#processStatus").html(v.processStatus);
+							$li.appendTo("#selectable ");
+						});
+						$(".auditresult").click(function() {
+							//							alert($(this).siblings('#id').html())
+							//							alert($(this).html());
+							$.ajax({
+								url: "http://127.0.0.1:8080/Chop/stampjson/auditProcess.action",
+								data: { nodeid: $(this).siblings('#id').html(), auditResult: $(this).val() },
+								dataType: "jsonp",
+								jsonp: "callback",
+								success: function(data, status) {
+									//									alert(data);
+								}
+							})
+						})
+						$("li").click(function() {
+							$(this).addClass('ui-selected');
+							$(this).children("#auditrow").removeClass("hidden");
+							$(this).siblings().removeClass('ui-selected');
+							$(this).siblings().children("#auditrow").addClass('hidden');
+							<!--$("p ").html($(this).children("#requestdate ").html());-->
+						})
+						$("button").dblclick(function() {
+							$("p").slideToggle();
+						});
+					},
+					error: function(jqx, status, Error) {
+						alert(JSON.stringify(jqx));
+						alert(status);
+					}
+				});
+
+			});
+		</script>
+	</body>
+
+</html>

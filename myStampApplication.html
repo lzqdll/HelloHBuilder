@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.js"></script>
+		<script src="jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			#feedback {
+				font-size: 1.4em;
+			}
+			
+			#selectable .ui-selecting {
+				background: #FECA40;
+			}
+			
+			#selectable .ui-selected {
+				background: #F39814;
+				color: white;
+			}
+			
+			#selectable {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				width: 100%;
+			}
+			
+			#selectable li {
+				margin: 3px;
+				padding: 0.4em;
+				/*font-size: 1.4em;*/
+				/*background-color: silver*/
+			}
+			#stamppic{
+				position: absolute;
+				left: 50%;
+				z-index: -1;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<li hidden="true" id="li_temp" class="">	
+			<img src="img/security_approved.png" alt="..." class="img-rounded col-xs-2" id="stamppic">
+			<div class="row">
+				<label class="col-xs-2" id="id" hidden="true"></label>
+				<label class="col-xs-6" id="documentName"></label>
+				<label class="col-xs-6 text-right" id="reqTime"></label>
+			</div>
+			<div class="row">
+				<label class="col-xs-2">文件页数:</label>
+				<label class="col-xs-1" id="documentNumber"></label>
+				<label class="col-xs-1">备注:</label>
+				<label class="col-xs-7 text-left" id="memo"></label>
+			</div>
+			<div class="row">
+				<label class="col-xs-2">审核进度:</label>
+				<label class="col-xs-2" id="processStatus"></label>
+				<label class="col-xs-3" id="docType"></label>
+			</div>
+
+		</li>
+		<div class="container">
+			<div class="row row-offcanvas row-offcanvas-right">
+				<div class="col-xs-6 col-sm-9">
+					<ul id="selectable">
+					</ul>
+				</div>
+				<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+					<div class="list-group">
+						<a href="myStampApplication.html" class="list-group-item active">我的申请</a>
+						<a href="myAuditApplication.html" class="list-group-item ">待审批</a>
+						<a href="#" class="list-group-item">Link</a>
+					</div>
+					<div>
+						<!-- Nav tabs -->
+						<ul class="nav nav-pills nav-stacked" role="tablist">
+							<li role="presentation" class="active">
+								<a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a>
+							</li>
+							<li role="presentation">
+								<a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a>
+							</li>
+							<li role="presentation">
+								<a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a>
+							</li>
+							<li role="presentation">
+								<a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a>
+							</li>
+						</ul>
+						<!-- Tab panes -->
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="home">home...</div>
+							<div role="tabpanel" class="tab-pane" id="profile">profile...</div>
+							<div role="tabpanel" class="tab-pane" id="messages">messages...</div>
+							<div role="tabpanel" class="tab-pane" id="settings">settings...</div>
+						</div>
+					</div>
+				</div>
+				<!--/.sidebar-offcanvas-->
+			</div>
+		</div>
+		<script type="text/javascript ">
+			$(document).ready(function() {
+					$.ajax({
+						url: "http://127.0.0.1:8080/Chop/stampjson/myApplications.action",
+						dataType: "jsonp",
+						jsonp: "callback",
+						success: function(data, status) {
+							$("p").html(JSON.stringify(data))
+							$.each(data.chopApplicationInstances, function(i, v) {
+								//alert(JSON.stringify(v));
+								var $li = $("#li_temp").clone();
+								$li.prop("hidden", false);
+								$li.find("#id").html(v.id);
+								$li.find("#documentName").html(v.documentName);
+								$li.find("#reqTime").html(v.reqTime);
+								$li.find("#documentNumber").html(v.documentNumber);
+								$li.find("#memo").html(v.memo);
+								$li.find("#processStatus").html(v.processStatus);
+								if(v.processStatus=='DECLINED')
+								$li.addClass('bg-danger');
+								else if(v.processStatus=='APPROVED')
+								$li.addClass('bg-success');								
+								$li.appendTo("#selectable ");
+							});
+							$("li").click(function() {
+								$(this).addClass('ui-selected');
+								$(this).siblings().removeClass('ui-selected');
+								//$("p ").html($(this).children("#requestdate ").html());
+							})
+							$("button").dblclick(function() {
+								$("p").slideToggle();
+							});
+						},
+						error: function(jqx, status, Error) {
+							alert(JSON.stringify(jqx));
+							alert(status);
+						}
+					});
+			});
+		</script>
+	</body>
+
+</html>

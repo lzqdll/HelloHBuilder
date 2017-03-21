@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.js"></script>
+		<script src="jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			#feedback {
+				font-size: 1.4em;
+			}
+			#selectable .ui-selecting {
+				background: #FECA40;
+			}
+			#selectable .ui-selected {
+				background: #F39814;
+				color: white;
+			}
+			#selectable {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				width: 100%;
+			}
+			#selectable li {
+				margin: 3px;
+				padding: 0.4em;
+				/*font-size: 1.4em;*/
+				background-color: silver
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="container grid-p">
+	<form class="form-horizontal" action="applicationSubmission.action">
+		<div class="form-group">
+			<label for="StampType" class="col-sm-2 control-label">印章类型</label>
+			<div class="col-sm-10">
+				<select class="form-control">
+					<option>公章</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="docType" class="col-sm-2 control-label">文档类型</label>
+			<div class="col-sm-10">
+				<s:select label="文件类型" name="auditProcessDefinition.id" list="auditDefinitions"
+					listKey="id" listValue="docType" cssClass="form-control" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="docname" class="col-sm-2 control-label">文件名称</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="docname" name="chopApplicationInstance.documentName"
+					placeholder="用印文件名称">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="docPageCount" class="col-sm-2 control-label">文件页数</label>
+			<div class="col-sm-10">
+				<input type="number" class="form-control" id="docPageCount" name="chopApplicationInstance.documentNumber"
+					placeholder="docPageCount">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="memo" class="col-sm-2 control-label">备注</label>
+			<div class="col-sm-10">
+				<textarea class="form-control" rows="3" id="memo" name="chopApplicationInstance.memo"> </textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button type="submit" class="btn btn-default">提交</button>
+			</div>
+		</div>
+	</form>
+</div>
+	</body>
+
+</html>
